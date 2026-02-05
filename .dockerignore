@@ -1,0 +1,53 @@
+# Ignore everything not needed in container
+.git
+.gitignore
+.dockerignore
+README.md
+LICENSE
+Makefile
+
+# Local config & secrets
+.env
+.env.local
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Python bytecode & caches
+__pycache__/
+*.py[cod]
+*$py.class
+.mypy_cache/
+.pytest_cache/
+.gradio/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Logs and databases
+*.log
+*.sqlite
+
+# Data files (uploaded by users)
+*.xlsx
+*.xls
+*.csv
+*.json
+output/
+results/
+temp/
+
+# Test files
+tests/
+conftest.py
+
+# Build artifacts
+build/
+dist/
+*.egg-info/

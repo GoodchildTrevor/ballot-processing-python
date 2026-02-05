@@ -1,7 +1,7 @@
 import gradio as gr
 import tempfile
 import os
-from processor import process_votes
+from years.ballot_processor import run_voting
 
 NOMINATIONS = [
     "director", "actor", "actress", "actor2", "actress2",
@@ -21,7 +21,7 @@ def run_processing(file, nominations):
         output_path = tmp_out.name
 
     try:
-        process_votes(file.name, output_path, nominations)
+        run_voting(file.name, nominations)
         return output_path
     except Exception as e:
         if os.path.exists(output_path):

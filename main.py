@@ -1,9 +1,9 @@
 import gradio as gr
 import tempfile
 import os
-from years.ballot_processor import run_voting
+import shutil
 
-NOMINATIONS = [
+ALL_NOMINATIONS = [
     "director", "actor", "actress", "actor2", "actress2",
     "original_screenplay", "adapted_screenplay", "operator", "editing",
     "soundtrack", "song", "art_direction", "costumes", "make_up",
@@ -13,35 +13,56 @@ NOMINATIONS = [
     "choreography", "special_mentions"
 ]
 
-def run_processing(file, nominations):
-    if not nominations:
+def run_processing(file_obj, selected_noms):
+    if file_obj is None:
+        raise gr.Error("Пожалуйста, загрузите файл!")
+    if not selected_noms:
         raise gr.Error("Выберите хотя бы одну номинацию!")
     
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as tmp_out:
-        output_path = tmp_out.name
+    temp_dir = tempfile.gettempdir()
+    output_path = os.path.join(temp_dir, f"result_{os.path.basename(file_obj.name)}")
+    shutil.copy2(file_obj.name, output_path)
 
     try:
-        run_voting(file.name, nominations)
+        sorted_selected = [n for n in ALL_NOMINATIONS if n in selected_noms]
+        
+        run_voting(output_path, sorted_selected)
+        
         return output_path
     except Exception as e:
         if os.path.exists(output_path):
             os.unlink(output_path)
         raise gr.Error(f"Ошибка обработки: {str(e)}")
 
-with gr.Blocks(title="Кинопоиск Голосование") as demo:
+with gr.Blocks(title="Кинопоиск Голосование", theme=gr.themes.Soft()) as demo:
     gr.Markdown("## 🎬 Обработка бюллетеней Кинопоиска")
-    gr.Markdown("Загрузите Excel-файл с листами `номинанты` и `списки`")
+    gr.Markdown(
+        "Загрузите Excel-файл. Напоминание: в файле должны быть листы **'номинанты'** (голоса) и **'списки'** (номинанты)."
+    )
     
     with gr.Row():
-        file_input = gr.File(label="Excel-файл (.xlsx)", file_types=[".xlsx"])
-        nominations_input = gr.CheckboxGroup(
-            choices=NOMINATIONS,
-            value=NOMINATIONS,
-            label="Номинации"
-        )
+        with gr.Column(scale=1):
+            file_input = gr.File(
+                label="Загрузите Excel-файл (.xlsx)", 
+                file_types=[".xlsx"]
+            )
+            submit_btn = gr.Button("🚀 Обработать", variant="primary")
+        
+        with gr.Column(scale=2):
+            with gr.Row():
+                select_all = gr.Button("Выбрать все", size="sm")
+                deselect_all = gr.Button("Сбросить", size="sm")
+            
+            nominations_input = gr.CheckboxGroup(
+                choices=ALL_NOMINATIONS,
+                value=ALL_NOMINATIONS,
+                label="Список номинаций для обработки (влияет на порядок колонок)"
+            )
     
-    submit_btn = gr.Button("Обработать")
-    output_file = gr.File(label="Результат", interactive=False)
+    output_file = gr.File(label="📥 Скачать результат", interactive=False)
+
+    select_all.click(lambda: ALL_NOMINATIONS, outputs=nominations_input)
+    deselect_all.click(lambda: [], outputs=nominations_input)
 
     submit_btn.click(
         fn=run_processing,

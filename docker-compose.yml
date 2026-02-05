@@ -1,0 +1,7 @@
+services:
+  ballot_processing:
+    container_name: ballot_processing
+    build: .
+    ports:
+      - "7860:7860"
+    restart: unless-stopped

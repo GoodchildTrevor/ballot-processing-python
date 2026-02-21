@@ -6,8 +6,9 @@ import os
 
 
 def delete_non_breaking_spaces(text):
-    if pd.isna(text): return ""
-    return str(text).replace("\u00A0", " ").strip()
+    if pd.isna(text): 
+        return ""
+    return str(text).replace("\u00A0", " ").replace("  ", " ").strip()
 
 def postfix(score: int):
     if score == 1:
@@ -48,7 +49,8 @@ def process_data(df: pd.DataFrame, nominees_df: pd.DataFrame, nominations: list)
             
             for nominee in current_nominees:
                 clean_nominee = delete_non_breaking_spaces(nominee)
-                if not clean_nominee: continue
+                if not clean_nominee: 
+                    continue
                 
                 for voter_idx, vote_val in enumerate(df_other.iloc[:, i].values):
                     if clean_nominee in str(vote_val):

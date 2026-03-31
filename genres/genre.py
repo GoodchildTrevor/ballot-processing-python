@@ -169,21 +169,28 @@ def process_file(excel_path: str):
     return zip_path, preview_img, similar_films_df
 
 
-demo = gr.Interface(
-    fn=process_file,
-    inputs=gr.File(type='filepath', label='Загрузите Excel с топами'),
-    outputs=[
-        gr.File(label='Архив с результатами (Excel + картинки)'),
-        gr.Image(label='Превью последнего майлстоуна', type='filepath'),
-        gr.DataFrame(
-            label='Похожие названия фильмов (расстояние Левенштейна ≤ 3)',
-            headers=['Фильм 1', 'Фильм 2', 'Расстояние'],
-            wrap=True
-        )
-    ],
+with gr.Blocks(
     title='Жанровый топ фильмов',
-    description='Загружаете Excel — получаете общий топ и промежуточные результаты в одном архиве'
-)
+    theme=gr.themes.Soft()
+) as demo:
+    file_input = gr.File(type='filepath', label='Загрузите Excel с топами')
+
+    submit_btn = gr.Button('Обработать')
+    clear_btn = gr.Button('Очистить')
+
+    output_zip = gr.File(label='Архив с результатами (Excel + картинки)')
+    similar_df = gr.DataFrame(
+        label='Похожие названия фильмов (расстояние Левенштейна ≤ 3)',
+        headers=['Фильм 1', 'Фильм 2', 'Расстояние'],
+        wrap=True
+    )
+
+    submit_btn.click(
+        fn=process_file,
+        inputs=file_input,
+        outputs=[output_zip, similar_df]
+    )
+    clear_btn.click(lambda: None, outputs=file_input)
 
 
 if __name__ == "__main__":

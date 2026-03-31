@@ -5,7 +5,7 @@ import gradio as gr
 import pandas as pd
 import Levenshtein
 from itertools import combinations
-from genres.utils import define_decade, extract_year, process_results, save_df_as_image
+from utils import define_decade, extract_year, process_results, save_df_as_image
 
 
 def process_file(excel_path: str):

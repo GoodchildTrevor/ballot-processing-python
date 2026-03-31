@@ -3,7 +3,7 @@ import tempfile
 import os
 import shutil
 
-from years.ballot_processor import run_voting
+from ballot_processor import run_voting
 
 ALL_NOMINATIONS = [
     "director", "actor", "actress", "actor2", "actress2",

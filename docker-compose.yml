@@ -1,7 +1,22 @@
 services:
-  ballot_processing:
-    container_name: ballot_processing
-    build: .
+  years:
+    container_name: ballot_processing_years
+    build:
+      context: ./years
+      dockerfile: Dockerfile
     ports:
       - "7860:7860"
     restart: unless-stopped
+    profiles:
+      - years
+
+  genres:
+    container_name: ballot_processing_genres
+    build:
+      context: ./genres
+      dockerfile: Dockerfile
+    ports:
+      - "7861:7860"
+    restart: unless-stopped
+    profiles:
+      - genres

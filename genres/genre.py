@@ -166,24 +166,37 @@ def process_file(excel_path: str):
     else:
         logger.info("No preview image (no milestones)")
 
-    return zip_path, preview_img, similar_films_df
+    return zip_path, similar_films_df
 
 
 with gr.Blocks(
     title='Жанровый топ фильмов',
     theme=gr.themes.Soft()
 ) as demo:
-    file_input = gr.File(type='filepath', label='Загрузите Excel с топами')
-
-    submit_btn = gr.Button('Обработать')
-    clear_btn = gr.Button('Очистить')
-
-    output_zip = gr.File(label='Архив с результатами (Excel + картинки)')
-    similar_df = gr.DataFrame(
-        label='Похожие названия фильмов (расстояние Левенштейна ≤ 3)',
-        headers=['Фильм 1', 'Фильм 2', 'Расстояние'],
-        wrap=True
+    gr.Markdown("## Жанровый топ фильмов")
+    gr.Markdown(
+        "Загрузите Excel — получите общий топ и архив с промежуточными результатами."
     )
+
+    with gr.Row():
+        with gr.Column(scale=5, min_width=450):
+            file_input = gr.File(
+                type='filepath',
+                label='Загрузите Excel с топами'
+            )
+            with gr.Row():
+                submit_btn = gr.Button('Обработать', variant='primary')
+                clear_btn = gr.Button('Очистить')
+
+        with gr.Column(scale=4, min_width=400):
+            similar_df = gr.DataFrame(
+                label='Похожие названия фильмов (расстояние Левенштейна ≤ 3)',
+                headers=['Фильм 1', 'Фильм 2', 'Расстояние'],
+                wrap=True
+            )
+            output_zip = gr.File(
+                label='Архив с результатами (Excel + картинки)'
+            )
 
     submit_btn.click(
         fn=process_file,
